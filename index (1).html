@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pengetahuan</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            transition: background-color 1s ease-in-out; /* Transisi perubahan background warna */
+        }
+        h1, h2 {
+            color: white; /* Warna teks putih */
+            border: 2px solid black; /* Menambahkan garis hitam di sekitar teks */
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .start-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px 0;
+            border: 2px solid black; /* Garis hitam di sekitar tombol */
+        }
+        .start-button:hover {
+            background-color: #218838;
+        }
+        .quiz-container {
+            display: none;
+            text-align: center;
+        }
+        #question {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            color: white; /* Warna teks putih */
+            border: 2px solid black; /* Menambahkan garis hitam di sekitar pertanyaan */
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .answer-button {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 2px solid black; /* Garis hitam di sekitar tombol */
+        }
+        .answer-button:hover {
+            background-color: #218838;
+        }
+        .correct {
+            background-color: #28a745;
+            color: white;
+        }
+        .incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang di Kuis SMPN 1 BAWANG!</h1>
+    <p>Nama Pembuat: Brima Ashari</p>
+    <button class="start-button" onclick="startQuiz()">Mulai</button>
+
+    <div class="quiz-container" id="quizContainer">
+        <h2 id="question"></h2>
+        <button id="answerButton" class="answer-button" onclick="checkAnswer(true)">Jawaban</button>
+        <button id="giveUpButton" class="answer-button" onclick="checkAnswer(false)">Nyerah</button>
+    </div>
+
+    <script>
+        let currentLevel = 0;
+        let score = 0; // Variabel untuk menghitung skor
+        const questions = [
+            { 
+                question: "Berapa jumlah siswa laki-laki?", 
+                answer: "349", 
+                backgroundColor: "#ffeb3b" 
+            },
+            { 
+                question: "Jadwal pulang hari senin sampai kamis?", 
+                answer: "01:10 WIB", 
+                backgroundColor: "#ff5722" 
+            },
+            { 
+                question: "Siapa wali kelas 9D?", 
+                answer: "Oka Aji Setyawan", 
+                backgroundColor: "#4caf50" 
+            },
+            { 
+                question: "Kurikulum yang digunakan?", 
+                answer: "SMP 2013", 
+                backgroundColor: "#2196f3" 
+            },
+            { 
+                question: "Berapa jumlah kantin?", 
+                answer: "7", 
+                backgroundColor: "#9c27b0" 
+            },
+            { 
+                question: "Jumlah ruang kelas?", 
+                answer: "21", 
+                backgroundColor: "#ff9800" 
+            },
+            { 
+                question: "Ada berapa laboratorium?", 
+                answer: "1", 
+                backgroundColor: "#00bcd4" 
+            },
+            { 
+                question: "Akses internet tersedia?", 
+                answer: "Tidak Ada", 
+                backgroundColor: "#673ab7" 
+            }
+        ];
+
+        // Fungsi untuk mengubah warna background secara bergantian
+        let colorIndex = 0;
+        function changeBackgroundColor() {
+            document.body.style.backgroundColor = questions[colorIndex].backgroundColor;
+            colorIndex = (colorIndex + 1) % questions.length; // Mengulangi warna setelah mencapai akhir
+        }
+
+        setInterval(changeBackgroundColor, 3000); // Ganti warna setiap 3 detik
+
+        function startQuiz() {
+            document.querySelector("h1").style.display = "none";
+            document.querySelector("p").style.display = "none";
+            document.querySelector(".start-button").style.display = "none";
+            document.getElementById("quizContainer").style.display = "block";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentLevel < questions.length) {
+                // Mengubah warna latar belakang sesuai dengan pertanyaan
+                const questionElement = document.getElementById("question");
+
+                // Menambahkan efek transisi pada pertanyaan
+                questionElement.style.opacity = 0; // Mulai dengan opacity 0
+
+                // Tunggu beberapa waktu sebelum mengubah teks dan menampilkan opacity
+                setTimeout(() => {
+                    questionElement.innerText = questions[currentLevel].question;
+                    questionElement.style.opacity = 1; // Fade in
+                    showAnswerButtons();
+                }, 500); // Tunggu 0.5 detik sebelum perubahan
+            } else {
+                showResult();
+            }
+        }
+
+        function showAnswerButtons() {
+            const answerButton = document.getElementById("answerButton");
+            const giveUpButton = document.getElementById("giveUpButton");
+
+            // Menambahkan efek transisi pada tombol
+            answerButton.style.opacity = 0;
+            giveUpButton.style.opacity = 0;
+
+            setTimeout(() => {
+                answerButton.style.opacity = 1; // Fade in tombol Jawaban
+                giveUpButton.style.opacity = 1; // Fade in tombol Nyerah
+            }, 500); // Tunggu 0.5 detik sebelum muncul
+        }
+
+        function checkAnswer(userAnswer) {
+            const currentQuestion = questions[currentLevel];
+            const correctAnswer = currentQuestion.answer;
+
+            const userInput = prompt(`Apa jawaban Anda?`);
+            
+            if (userInput !== null) {
+                let isCorrect = false;
+                if (typeof correctAnswer === "number") {
+                    isCorrect = parseInt(userInput) === correctAnswer;
+                } else {
+                    isCorrect = userInput.trim() === correctAnswer;
+                }
+
+                const answerButton = document.getElementById("answerButton");
+                const giveUpButton = document.getElementById("giveUpButton");
+
+                if (isCorrect) {
+                    alert("Jawaban benar! Lanjut ke pertanyaan berikut.");
+                    score++; // Tambahkan skor jika jawaban benar
+                    answerButton.classList.add("correct");
+                    giveUpButton.classList.add("correct");
+                } else {
+                    alert("Jawaban salah! Lanjut ke pertanyaan berikut.");
+                    answerButton.classList.add("incorrect");
+                    giveUpButton.classList.add("incorrect");
+                }
+
+                currentLevel++;
+                loadQuestion();
+            }
+        }
+
+        function showResult() {
+            alert(`Kuis selesai! Skor Anda: ${score} dari ${questions.length}`);
+            resetQuiz();
+        }
+
+        function resetQuiz() {
+            currentLevel = 0;
+            score = 0; // Reset skor saat kuis diulang
+            document.getElementById("quizContainer").style.display = "none";
+            document.querySelector("h1").style.display = "block";
+            document.querySelector("p").style.display = "block";
+            document.querySelector(".start-button").style.display = "block";
+        }
+    </script>
+</body>
+</html>
